@@ -26,6 +26,6 @@
 
 ## Example Commands
 - World conversion:
-  - `python3 converter.py --input minecraftmaps/Lectus --output output/lectus_hytale --template serverexample/universe/worlds/default`
+- `python3 converter.py --input minecraftmaps/Lectus --output output/lectus_hytale --template save/universe/worlds/default`
 - Prefab export:
   - `python3 schematic_converter.py --input minecraftmaps/Lectus --output output/lectus.prefab.json`

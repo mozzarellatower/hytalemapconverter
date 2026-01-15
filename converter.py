@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import base64
 import io
 import json
 import os
@@ -243,7 +244,7 @@ def build_palette(blocks, asset_count):
 
 
 class BlockMapper:
-    def __init__(self, mapping_path=None):
+    def __init__(self, mapping_path=None, default_block=None):
         self.mapping = {}
         self.legacy = {}
         self.legacy_by_id = {}
@@ -255,6 +256,17 @@ class BlockMapper:
             self.legacy = data.get("legacy", {})
             self.legacy_by_id = data.get("legacy_by_id", {})
             self.default = data.get("default", self.default)
+        if default_block:
+            self.default = normalize_default_block(default_block)
+
+
+def normalize_default_block(value):
+    if value is None:
+        return None
+    lowered = value.strip().lower()
+    if lowered in ("air", "empty"):
+        return "Empty"
+    return value
 
     def map_modern(self, name):
         if name in self.mapping:
@@ -324,6 +336,46 @@ class TemplateInfo:
         self.empty_fluid_data = min(fluid_samples, key=len)
         self.block_physics_data = b"\x00"
 
+    @classmethod
+    def from_cache(cls, cache_path):
+        with open(cache_path, "r", encoding="utf-8") as f:
+            payload = json.load(f)
+        info = cls.__new__(cls)
+        info.version = payload["version"]
+        info.blob_count = payload["blob_count"]
+        info.segment_size = payload["segment_size"]
+        info.section_count = payload["section_count"]
+        info.asset_count = payload["asset_count"]
+        info.block_chunk_version = payload["block_chunk_version"]
+        info.block_chunk_data = base64.b64decode(payload["block_chunk_data"])
+        info.block_health_data = base64.b64decode(payload["block_health_data"])
+        info.environment_data = base64.b64decode(payload["environment_data"])
+        info.empty_fluid_data = base64.b64decode(payload["empty_fluid_data"])
+        info.block_physics_data = base64.b64decode(payload["block_physics_data"])
+        info.region_path = None
+        return info
+
+    def save_cache(self, cache_path):
+        payload = {
+            "version": self.version,
+            "blob_count": self.blob_count,
+            "segment_size": self.segment_size,
+            "section_count": self.section_count,
+            "asset_count": self.asset_count,
+            "block_chunk_version": self.block_chunk_version,
+            "block_chunk_data": base64.b64encode(self.block_chunk_data).decode("ascii"),
+            "block_health_data": base64.b64encode(self.block_health_data).decode(
+                "ascii"
+            ),
+            "environment_data": base64.b64encode(self.environment_data).decode("ascii"),
+            "empty_fluid_data": base64.b64encode(self.empty_fluid_data).decode("ascii"),
+            "block_physics_data": base64.b64encode(
+                self.block_physics_data
+            ).decode("ascii"),
+        }
+        with open(cache_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, sort_keys=True)
+
 
 class HytaleChunkBuilder:
     def __init__(self, section_count):
@@ -388,9 +440,19 @@ def decode_block_states(block_states, palette_size):
     return indices
 
 
-def convert_world(mc_world, output_world, template, mapping_path):
-    mapper = BlockMapper(mapping_path)
-    template_info = TemplateInfo(template)
+def convert_world(
+    mc_world, output_world, template, mapping_path, template_cache=None, default_block=None
+):
+    mapper = BlockMapper(mapping_path, default_block=default_block)
+    template_info = None
+    if template_cache and os.path.exists(template_cache):
+        template_info = TemplateInfo.from_cache(template_cache)
+    if template_info is None and template:
+        template_info = TemplateInfo(template)
+        if template_cache:
+            template_info.save_cache(template_cache)
+    if template_info is None:
+        raise ValueError("template or template cache is required")
 
     # build chunk builders
     chunks = {}
@@ -507,24 +569,27 @@ def convert_world(mc_world, output_world, template, mapping_path):
     # build output world structure
     os.makedirs(output_world, exist_ok=True)
     os.makedirs(os.path.join(output_world, "chunks"), exist_ok=True)
-    # copy config and resources
-    for name in ("config.json", "config.json.bak"):
-        src = os.path.join(template, name)
-        if os.path.exists(src):
-            with open(src, "rb") as fsrc, open(
-                os.path.join(output_world, name), "wb"
-            ) as fdst:
-                fdst.write(fsrc.read())
-    resources_src = os.path.join(template, "resources")
-    resources_dst = os.path.join(output_world, "resources")
-    if os.path.isdir(resources_src) and not os.path.exists(resources_dst):
-        os.makedirs(resources_dst, exist_ok=True)
-        for filename in os.listdir(resources_src):
-            src = os.path.join(resources_src, filename)
-            dst = os.path.join(resources_dst, filename)
-            if os.path.isfile(src):
-                with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
+    # copy config and resources when a template is available
+    if template:
+        for name in ("config.json", "config.json.bak"):
+            src = os.path.join(template, name)
+            if os.path.exists(src):
+                with open(src, "rb") as fsrc, open(
+                    os.path.join(output_world, name), "wb"
+                ) as fdst:
                     fdst.write(fsrc.read())
+        resources_src = os.path.join(template, "resources")
+        resources_dst = os.path.join(output_world, "resources")
+        if os.path.isdir(resources_src) and not os.path.exists(resources_dst):
+            os.makedirs(resources_dst, exist_ok=True)
+            for filename in os.listdir(resources_src):
+                src = os.path.join(resources_src, filename)
+                dst = os.path.join(resources_dst, filename)
+                if os.path.isfile(src):
+                    with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
+                        fdst.write(fsrc.read())
+    else:
+        print("No template provided; skipping config/resources copy.")
 
     # build region blobs
     region_blobs = defaultdict(dict)
@@ -591,13 +656,26 @@ def main():
     )
     parser.add_argument(
         "--template",
-        required=True,
-        help="Path to template Hytale world folder (e.g., serverexample/universe/worlds/default)",
+        default=None,
+        help=(
+            "Path to template Hytale world folder "
+            "(e.g., serverexample/universe/worlds/default)"
+        ),
+    )
+    parser.add_argument(
+        "--template-cache",
+        default=None,
+        help="Path to template cache JSON (used or created)",
     )
     parser.add_argument(
         "--mapping",
         default=None,
         help="Optional mapping JSON to override block mappings",
+    )
+    parser.add_argument(
+        "--default-block",
+        default=None,
+        help="Override default block for unmapped entries (e.g., Empty or Air)",
     )
 
     args = parser.parse_args()
@@ -608,7 +686,22 @@ def main():
         )
         if os.path.exists(default_mapping):
             mapping_path = default_mapping
-    convert_world(args.input, args.output, args.template, mapping_path)
+    template_cache = args.template_cache
+    if template_cache is None and args.template is None:
+        default_cache = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "template_cache.json"
+        )
+        if os.path.exists(default_cache):
+            template_cache = default_cache
+
+    convert_world(
+        args.input,
+        args.output,
+        args.template,
+        mapping_path,
+        template_cache,
+        default_block=args.default_block,
+    )
 
 
 if __name__ == "__main__":

@@ -23,13 +23,54 @@ World conversion (drag-in Hytale world folder):
 python3 world_converter.py \
   --input minecraftmaps/YourMap \
   --output output/yourmap_hytale \
-  --template serverexample/universe/worlds/default
+  --template save/universe/worlds/default
 ```
 
-Prefab conversion (schematic JSON):
+Optional: create or reuse a small template cache (repo includes `template_cache.json`). If you omit both `--template` and `--template-cache`, it will default to the bundled cache:
+```bash
+python3 world_converter.py \
+  --input minecraftmaps/YourMap \
+  --output output/yourmap_hytale \
+  --template save/universe/worlds/default \
+  --template-cache template_cache.json
+```
+
+Example layout:
+```
+project-root/
+  minecraftmaps/
+    YourMap/
+      region/
+  output/
+    yourmap_hytale/
+  save/
+    universe/
+      worlds/
+        default/    # template world (from a Hytale server save)
+```
+
+Prefab conversion (schematic JSON, world folder, `.schematic`, `.schem`, or `.litematic` file):
 ```bash
 python3 schematic_converter.py \
   --input minecraftmaps/YourMap \
+  --output output/yourmap.prefab.json
+```
+
+```bash
+python3 schematic_converter.py \
+  --input minecraftmaps/YourMap.schematic \
+  --output output/yourmap.prefab.json
+```
+
+```bash
+python3 schematic_converter.py \
+  --input minecraftmaps/YourMap.schem \
+  --output output/yourmap.prefab.json
+```
+
+```bash
+python3 schematic_converter.py \
+  --input minecraftmaps/YourMap.litematic \
   --output output/yourmap.prefab.json
 ```
 
@@ -52,8 +93,16 @@ The converters load `mappings/default.json` automatically. To override:
 python3 world_converter.py \
   --input minecraftmaps/YourMap \
   --output output/yourmap_hytale \
-  --template serverexample/universe/worlds/default \
+  --template save/universe/worlds/default \
   --mapping mappings/default.json
+```
+
+To avoid defaulting unknown blocks to stone, pass:
+```bash
+python3 world_converter.py \
+  --input minecraftmaps/YourMap \
+  --output output/yourmap_hytale \
+  --default-block Empty
 ```
 
 ## Notes

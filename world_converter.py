@@ -21,16 +21,26 @@ def main():
     )
     parser.add_argument(
         "--template",
-        required=True,
+        default=None,
         help=(
             "Path to template Hytale world folder "
             "(e.g., serverexample/universe/worlds/default)"
         ),
     )
     parser.add_argument(
+        "--template-cache",
+        default=None,
+        help="Path to template cache JSON (used or created)",
+    )
+    parser.add_argument(
         "--mapping",
         default=None,
         help="Optional mapping JSON to override block mappings",
+    )
+    parser.add_argument(
+        "--default-block",
+        default=None,
+        help="Override default block for unmapped entries (e.g., Empty or Air)",
     )
 
     args = parser.parse_args()
@@ -42,7 +52,22 @@ def main():
         if os.path.exists(default_mapping):
             mapping_path = default_mapping
 
-    convert_world(args.input, args.output, args.template, mapping_path)
+    template_cache = args.template_cache
+    if template_cache is None and args.template is None:
+        default_cache = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "template_cache.json"
+        )
+        if os.path.exists(default_cache):
+            template_cache = default_cache
+
+    convert_world(
+        args.input,
+        args.output,
+        args.template,
+        mapping_path,
+        template_cache,
+        default_block=args.default_block,
+    )
 
 
 if __name__ == "__main__":
