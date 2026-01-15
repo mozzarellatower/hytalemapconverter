@@ -259,15 +259,6 @@ class BlockMapper:
         if default_block:
             self.default = normalize_default_block(default_block)
 
-
-def normalize_default_block(value):
-    if value is None:
-        return None
-    lowered = value.strip().lower()
-    if lowered in ("air", "empty"):
-        return "Empty"
-    return value
-
     def map_modern(self, name):
         if name in self.mapping:
             return self.mapping[name]
@@ -288,6 +279,15 @@ def normalize_default_block(value):
     def is_mapped_legacy(self, block_id, block_data):
         key = f"{block_id}:{block_data}"
         return key in self.legacy or str(block_id) in self.legacy_by_id
+
+
+def normalize_default_block(value):
+    if value is None:
+        return None
+    lowered = value.strip().lower()
+    if lowered in ("air", "empty"):
+        return "Empty"
+    return value
 
 
 class TemplateInfo:

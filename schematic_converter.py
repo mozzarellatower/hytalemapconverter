@@ -113,15 +113,6 @@ class BlockMapper:
         if default_block:
             self.default = normalize_default_block(default_block)
 
-
-def normalize_default_block(value):
-    if value is None:
-        return None
-    lowered = value.strip().lower()
-    if lowered in ("air", "empty"):
-        return "Empty"
-    return value
-
     def map_modern(self, name):
         if name in self.mapping:
             return self.mapping[name]
@@ -142,6 +133,15 @@ def normalize_default_block(value):
     def is_mapped_legacy(self, block_id, block_data):
         key = f"{block_id}:{block_data}"
         return key in self.legacy or str(block_id) in self.legacy_by_id
+
+
+def normalize_default_block(value):
+    if value is None:
+        return None
+    lowered = value.strip().lower()
+    if lowered in ("air", "empty"):
+        return "Empty"
+    return value
 
 
 def iter_schematic_blocks(nbt_root, mapper):
@@ -328,8 +328,7 @@ def convert_schematic_to_prefab(
     schematic_path, output_path, mapping_path=None, default_block=None
 ):
     mapper = BlockMapper(mapping_path, default_block=default_block)
-    with open(schematic_path, "rb") as f:
-        nbt = nbtlib.File.parse(f)
+    nbt = nbtlib.load(schematic_path)
     root = nbt["Schematic"] if "Schematic" in nbt else nbt
 
     blocks = None
