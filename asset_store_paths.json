@@ -1,0 +1,536 @@
+{
+  "source": "/workspace/projects/mapconverter/tmp_decompile/out/com/hypixel/hytale/server/core/asset/AssetRegistryLoader.java",
+  "entries": [
+    {
+      "assetClass": "AmbienceFX",
+      "path": "Audio/AmbienceFX",
+      "extension": ".json",
+      "loadsAfter": [
+        "Weather",
+        "Environment",
+        "FluidFX",
+        "SoundEvent",
+        "BlockSoundSet",
+        "TagPattern",
+        "AudioCategory",
+        "ReverbEffect",
+        "EqualizerEffect"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(AmbienceFX.EMPTY"
+      ]
+    },
+    {
+      "assetClass": "AudioCategory",
+      "path": "Audio/AudioCategories",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "(List"
+      ]
+    },
+    {
+      "assetClass": "EqualizerEffect",
+      "path": "Audio/EQ",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "(List"
+      ]
+    },
+    {
+      "assetClass": "ItemSoundSet",
+      "path": "Audio/ItemSounds",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ReverbEffect",
+      "path": "Audio/Reverb",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "(List"
+      ]
+    },
+    {
+      "assetClass": "SoundEvent",
+      "path": "Audio/SoundEvents",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "(List"
+      ]
+    },
+    {
+      "assetClass": "SoundSet",
+      "path": "Audio/SoundSets",
+      "extension": ".json",
+      "loadsAfter": [
+        "SoundEvent"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(SoundSet.EMPTY_SOUND_SET"
+      ]
+    },
+    {
+      "assetClass": "BlockTypeListAsset",
+      "path": "BlockTypeList",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "CameraEffect",
+      "path": "Camera/CameraEffect",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [
+        "GameplayConfig",
+        "Interaction"
+      ],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ItemDropList",
+      "path": "Drops",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "DamageCause",
+      "path": "Entity/Damage",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "EntityEffect",
+      "path": "Entity/Effects",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "GameModeType",
+      "path": "Entity/GameMode",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ModelVFX",
+      "path": "Entity/ModelVFX",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "Trail",
+      "path": "Entity/Trails",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "Environment",
+      "path": "Environments",
+      "extension": ".json",
+      "loadsAfter": [
+        "Weather",
+        "FluidFX",
+        "ParticleSystem"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(Environment.UNKNOWN"
+      ]
+    },
+    {
+      "assetClass": "GameplayConfig",
+      "path": "GameplayConfigs",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ItemPlayerAnimations",
+      "path": "Item/Animations",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "BlockType",
+      "path": "Item/Block/Blocks",
+      "extension": ".json",
+      "loadsAfter": [
+        "BlockBoundingBoxes",
+        "BlockSoundSet",
+        "SoundEvent",
+        "BlockParticleSet",
+        "BlockBreakingDecal",
+        "CustomConnectedBlockTemplateAsset",
+        "PrefabListAsset",
+        "BlockTypeListAsset"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Arrays.asList(BlockType.EMPTY, BlockType.UNKNOWN, BlockType.DEBUG_CUBE, BlockType.DEBUG_MODEL"
+      ]
+    },
+    {
+      "assetClass": "BlockBreakingDecal",
+      "path": "Item/Block/BreakingDecals",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "FluidFX",
+      "path": "Item/Block/FluidFX",
+      "extension": ".json",
+      "loadsAfter": [
+        "ParticleSystem"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(FluidFX.EMPTY_FLUID_FX"
+      ]
+    },
+    {
+      "assetClass": "Fluid",
+      "path": "Item/Block/Fluids",
+      "extension": ".json",
+      "loadsAfter": [
+        "FluidFX",
+        "BlockSoundSet",
+        "BlockParticleSet",
+        "SoundEvent"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "List.of(Fluid.EMPTY, Fluid.UNKNOWN"
+      ]
+    },
+    {
+      "assetClass": "BlockBoundingBoxes",
+      "path": "Item/Block/Hitboxes",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "(List"
+      ]
+    },
+    {
+      "assetClass": "BlockMigration",
+      "path": "Item/Block/Migrations",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "BlockParticleSet",
+      "path": "Item/Block/Particles",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "BlockSet",
+      "path": "Item/Block/Sets",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "BlockSoundSet",
+      "path": "Item/Block/Sounds",
+      "extension": ".json",
+      "loadsAfter": [
+        "SoundEvent"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(BlockSoundSet.EMPTY_BLOCK_SOUND_SET"
+      ]
+    },
+    {
+      "assetClass": "ItemCategory",
+      "path": "Item/Category/CreativeLibrary",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "FieldcraftCategory",
+      "path": "Item/Category/Fieldcraft",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "BlockGroup",
+      "path": "Item/Groups",
+      "extension": ".json",
+      "loadsAfter": [
+        "BlockType",
+        "Item"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "Item",
+      "path": "Item/Items",
+      "extension": ".json",
+      "loadsAfter": [
+        "ItemCategory",
+        "ItemPlayerAnimations",
+        "UnarmedInteractions",
+        "ResourceType",
+        "BlockType",
+        "EntityEffect",
+        "ItemQuality",
+        "ItemReticleConfig",
+        "SoundEvent",
+        "PortalType",
+        "ItemSoundSet"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(Item.UNKNOWN"
+      ]
+    },
+    {
+      "assetClass": "BuilderToolItemReferenceAsset",
+      "path": "Item/PlayerToolsMenuConfig",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ItemQuality",
+      "path": "Item/Qualities",
+      "extension": ".json",
+      "loadsAfter": [
+        "ParticleSystem"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(ItemQuality.DEFAULT_ITEM_QUALITY"
+      ]
+    },
+    {
+      "assetClass": "CraftingRecipe",
+      "path": "Item/Recipes",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ResourceType",
+      "path": "Item/ResourceTypes",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ItemReticleConfig",
+      "path": "Item/Reticles",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "(List"
+      ]
+    },
+    {
+      "assetClass": "ItemToolSpec",
+      "path": "Item/Unarmed/Gathering",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ModelAsset",
+      "path": "Models",
+      "extension": ".json",
+      "loadsAfter": [
+        "ParticleSystem",
+        "SoundEvent",
+        "Trail"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "List.of(ModelAsset.DEBUG"
+      ]
+    },
+    {
+      "assetClass": "ParticleSpawner",
+      "path": "Particles",
+      "extension": ".particlespawner",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ParticleSystem",
+      "path": "Particles",
+      "extension": ".particlesystem",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "PortalType",
+      "path": "PortalTypes",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "PrefabListAsset",
+      "path": "PrefabList",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ProjectileConfig",
+      "path": "ProjectileConfigs",
+      "extension": ".json",
+      "loadsAfter": [
+        "Interaction",
+        "SoundEvent",
+        "ModelAsset",
+        "ParticleSystem"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "Projectile",
+      "path": "Projectiles",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "ResponseCurve",
+      "path": "ResponseCurves",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "TagPattern",
+      "path": "TagPatterns",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    },
+    {
+      "assetClass": "Weather",
+      "path": "Weathers",
+      "extension": ".json",
+      "loadsAfter": [
+        "ParticleSystem"
+      ],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": [
+        "Collections.singletonList(Weather.UNKNOWN"
+      ]
+    },
+    {
+      "assetClass": "WordList",
+      "path": "WordLists",
+      "extension": ".json",
+      "loadsAfter": [],
+      "loadsBefore": [],
+      "idProvider": null,
+      "preloadExprs": []
+    }
+  ]
+}
