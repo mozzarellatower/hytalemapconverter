@@ -34,6 +34,11 @@ def read_mc_chunk_bytes(region_path, chunk_index):
 def iter_mc_chunks(region_path):
     with open(region_path, "rb") as f:
         header = f.read(4096)
+    if len(header) < 4096:
+        print(
+            f"Warning: skipping invalid region file (short header): {region_path}"
+        )
+        return
     for i in range(1024):
         entry = struct.unpack(">I", header[i * 4 : (i + 1) * 4])[0]
         sector_offset = entry >> 8
