@@ -10,6 +10,8 @@ output/
 tmp_decompile/
 minecraftmaps/
 serverexample/
+worldcache/
+CONTINUOUS.MD
 
 .DS_Store
 Thumbs.db

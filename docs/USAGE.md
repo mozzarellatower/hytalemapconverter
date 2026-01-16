@@ -37,6 +37,16 @@ python3 world_converter.py \
 
 If you omit `--template`, config/resources are not copied.
 
+### Large worlds, caching, and resume
+If the world is larger than 100MB, the converter will prompt to run in chunked or parallel mode and build a cache under `worldcache/`.
+You can resume an interrupted run from the same folder:
+
+```bash
+python3 world_converter.py --continue
+```
+
+Prompts can be skipped with `--ignoreprompt`. To force a mode, use `--mode chunked` or `--mode parallel` and optionally `--workers 8`.
+
 ### Mapping
 The converter loads `mappings/default.json` automatically when present. To override mappings:
 
