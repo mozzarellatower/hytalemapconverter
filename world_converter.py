@@ -46,13 +46,13 @@ def main():
         "--mode",
         choices=("auto", "in-memory", "chunked", "parallel", "parallel-batch"),
         default="auto",
-        help="Conversion mode; auto prompts on large worlds.",
+        help="Conversion mode; auto prompts on large worlds (parallel-batch for queueing).",
     )
     parser.add_argument(
         "--workers",
         type=int,
         default=None,
-        help="Worker count for parallel mode (defaults to CPU count).",
+        help="Worker count for parallel/parallel-batch mode (defaults to CPU count).",
     )
     parser.add_argument(
         "--cache-dir",
@@ -63,7 +63,7 @@ def main():
         "--continue",
         dest="continue_mode",
         action="store_true",
-        help="Resume a cached conversion from worldcache.",
+        help="Resume a cached conversion from worldcache (or --cache-dir).",
     )
     parser.add_argument(
         "--ignoreprompt",

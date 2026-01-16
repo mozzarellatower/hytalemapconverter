@@ -45,7 +45,8 @@ You can resume an interrupted run from the same folder:
 python3 world_converter.py --continue
 ```
 
-Prompts can be skipped with `--ignoreprompt`. To force a mode, use `--mode chunked` or `--mode parallel` and optionally `--workers 8`.
+Prompts can be skipped with `--ignoreprompt`. To force a mode, use `--mode chunked`, `--mode parallel`, or `--mode parallel-batch` and optionally `--workers 8`.
+The resume command uses the default `worldcache/` directory unless you pass `--cache-dir`.
 
 ### Mapping
 The converter loads `mappings/default.json` automatically when present. To override mappings:

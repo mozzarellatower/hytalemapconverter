@@ -26,6 +26,22 @@ python3 world_converter.py \
   --template save/universe/worlds/default
 ```
 
+Large world conversion in parallel (chunked cache + workers):
+```bash
+python3 world_converter.py \
+  --input minecraftmaps/YourMap \
+  --output output/yourmap_hytale \
+  --mode parallel-batch \
+  --workers 8 \
+  --ignoreprompt
+```
+
+Resume a cached large-world run:
+```bash
+python3 world_converter.py --continue
+```
+This uses the default `worldcache/` directory created by the converter.
+
 Optional: create or reuse a small template cache (repo includes `template_cache.json`). If you omit both `--template` and `--template-cache`, it will default to the bundled cache:
 ```bash
 python3 world_converter.py \
