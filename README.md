@@ -121,6 +121,19 @@ python3 world_converter.py \
   --default-block Empty
 ```
 
+## Debugging Seams and Height Issues
+Enable per-chunk diagnostics and images with `--debug-export`:
+```bash
+python3 world_converter.py \
+  --input minecraftmaps/YourMap \
+  --output output/yourmap_hytale \
+  --template save/universe/worlds/default \
+  --debug-export
+```
+This writes JSON reports plus heightmap/material images under `output/yourmap_hytale/debug_exports/chunks/`.
+Heightmaps are 16-bit with a fixed offset of 32768 (so MC Y=0 appears as 32768).
+Use `--validate` to enable seam/bounds checks and fallback thresholds, and `--y-offset` to shift Y if needed.
+
 ## Notes
 - Legacy (1.8-era) chunks and modern Anvil palette chunks are supported.
 - Entities and tile entities are not converted yet.

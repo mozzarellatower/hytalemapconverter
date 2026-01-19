@@ -70,6 +70,33 @@ def main():
         action="store_true",
         help="Skip prompts and use defaults where possible.",
     )
+    parser.add_argument(
+        "--y-offset",
+        type=int,
+        default=None,
+        help="Additive Y offset applied to all block placements.",
+    )
+    parser.add_argument(
+        "--debug-export",
+        nargs="?",
+        const=True,
+        default=None,
+        help=(
+            "Write per-chunk debug reports and images. "
+            "Optionally supply an output directory."
+        ),
+    )
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Enable validation checks (bounds, seams, fallback threshold).",
+    )
+    parser.add_argument(
+        "--fallback-threshold",
+        type=float,
+        default=None,
+        help="Fallback material percentage threshold (default: 5%).",
+    )
 
     args = parser.parse_args()
     if not args.continue_mode:
@@ -103,6 +130,10 @@ def main():
         cache_dir=args.cache_dir,
         continue_mode=args.continue_mode,
         ignore_prompt=args.ignoreprompt,
+        y_offset=args.y_offset,
+        debug_export=args.debug_export,
+        validate=args.validate,
+        fallback_threshold=args.fallback_threshold,
     )
 
 

@@ -51,7 +51,9 @@ def iter_mc_chunks(region_path):
         root = nbt["Level"] if "Level" in nbt else nbt
         chunk_x = int(root.get("xPos", 0))
         chunk_z = int(root.get("zPos", 0))
-        sections = root.get("Sections", [])
+        sections = root.get("Sections")
+        if sections is None:
+            sections = root.get("sections", [])
         yield chunk_x, chunk_z, sections
 
 
@@ -102,12 +104,155 @@ def decode_packed_block_states(block_states, palette_size, total_blocks):
     return indices
 
 
+FALLBACK_EXACT = {
+    "grass_block": "Soil_Grass",
+    "dirt": "Soil_Dirt",
+    "coarse_dirt": "Soil_Dirt_Dry",
+    "podzol": "Soil_Dirt_Dry",
+    "mycelium": "Soil_Dirt_Poisoned",
+    "rooted_dirt": "Soil_Dirt",
+    "mud": "Soil_Dirt",
+    "clay": "Soil_Dirt",
+    "stone": "Rock_Stone",
+    "cobblestone": "Rock_Stone",
+    "gravel": "Soil_Gravel",
+    "sand": "Soil_Gravel_Sand",
+    "red_sand": "Soil_Gravel_Sand_Red",
+    "sandstone": "Rock_Sandstone",
+    "red_sandstone": "Rock_Sandstone_Red",
+    "snow": "Soil_Snow_Half",
+    "snow_block": "Soil_Snow",
+    "powder_snow": "Soil_Snow",
+    "ice": "Rock_Quartzite",
+    "packed_ice": "Rock_Quartzite",
+    "blue_ice": "Rock_Aqua",
+    "bedrock": "Rock_Bedrock",
+}
+
+FALLBACK_CONTAINS = (
+    ("grass", "Plant_Grass_Lush_Short"),
+    ("fern", "Plant_Grass_Jungle_Short"),
+    ("tall_grass", "Plant_Grass_Lush_Tall"),
+    ("seagrass", "Plant_Seaweed_Grass"),
+    ("kelp", "Plant_Seaweed_Grass_Tall"),
+    ("andesite", "Rock_Shale"),
+    ("diorite", "Rock_Calcite"),
+    ("granite", "Rock_Marble"),
+    ("deepslate", "Rock_Slate"),
+    ("slate", "Rock_Slate"),
+    ("basalt", "Rock_Basalt"),
+    ("tuff", "Rock_Chalk"),
+    ("dripstone", "Rock_Chalk"),
+    ("calcite", "Rock_Calcite"),
+    ("obsidian", "Rock_Volcanic"),
+    ("sandstone", "Rock_Sandstone"),
+    ("sand", "Soil_Gravel_Sand"),
+    ("gravel", "Soil_Gravel"),
+    ("stone", "Rock_Stone"),
+)
+
+WOOD_TYPE_MATERIAL = {
+    "oak": "Wood_Oak_Trunk",
+    "spruce": "Wood_Fir_Trunk",
+    "birch": "Wood_Birch_Trunk",
+    "jungle": "Wood_Jungle_Trunk",
+    "acacia": "Wood_Dry_Trunk",
+    "dark_oak": "Wood_Poisoned_Trunk",
+    "mangrove": "Wood_Palm_Trunk",
+    "cherry": "Wood_Maple_Trunk",
+    "bamboo": "Wood_Bamboo_Trunk",
+    "crimson": "Wood_Fire_Trunk",
+    "warped": "Wood_Ice_Trunk",
+}
+
+LEAF_TYPE_MATERIAL = {
+    "oak": "Plant_Leaves_Oak",
+    "spruce": "Plant_Leaves_Fir",
+    "birch": "Plant_Leaves_Birch",
+    "jungle": "Plant_Leaves_Jungle",
+    "acacia": "Plant_Leaves_Dry",
+    "dark_oak": "Plant_Leaves_Poisoned",
+    "mangrove": "Plant_Leaves_Palm",
+    "cherry": "Plant_Leaves_Autumn",
+    "azalea": "Plant_Leaves_Bramble",
+}
+
+WOOD_SUFFIXES = ("_log", "_wood", "_planks", "_stem", "_hyphae")
+LEAF_SUFFIXES = ("_leaves",)
+
+STRIP_SUFFIXES = (
+    "_fence_gate",
+    "_pressure_plate",
+    "_trapdoor",
+    "_button",
+    "_stairs",
+    "_slab",
+    "_wall",
+    "_fence",
+    "_door",
+    "_gate",
+    "_sign",
+    "_banner",
+    "_carpet",
+    "_wool",
+    "_bed",
+)
+
+
+def normalize_block_name(name):
+    if not name:
+        return ""
+    base = name.split("[", 1)[0]
+    if base.startswith("minecraft:"):
+        base = base.split(":", 1)[1]
+    return base.lower()
+
+
+def strip_variant_suffix(name):
+    for suffix in STRIP_SUFFIXES:
+        if name.endswith(suffix):
+            return name[: -len(suffix)]
+    return name
+
+
+def infer_tree_material(name, mapping, default_material):
+    for key, material in mapping.items():
+        if key in name:
+            return material
+    return default_material
+
+
+def fallback_material_for_name(name):
+    if not name:
+        return None
+    base = normalize_block_name(name)
+    if base in FALLBACK_EXACT:
+        return FALLBACK_EXACT[base]
+    for suffix in LEAF_SUFFIXES:
+        if base.endswith(suffix):
+            return infer_tree_material(base, LEAF_TYPE_MATERIAL, "Plant_Leaves_Oak")
+    for suffix in WOOD_SUFFIXES:
+        if base.endswith(suffix):
+            return infer_tree_material(base, WOOD_TYPE_MATERIAL, "Wood_Oak_Trunk")
+    if base in WOOD_TYPE_MATERIAL:
+        return WOOD_TYPE_MATERIAL[base]
+    if base in LEAF_TYPE_MATERIAL:
+        return LEAF_TYPE_MATERIAL[base]
+    for key, material in FALLBACK_CONTAINS:
+        if key in base:
+            return material
+    stripped = strip_variant_suffix(base)
+    if stripped != base:
+        return fallback_material_for_name(stripped)
+    return None
+
+
 class BlockMapper:
     def __init__(self, mapping_path=None, default_block=None):
         self.mapping = {}
         self.legacy = {}
         self.legacy_by_id = {}
-        self.default = "Rock_Stone"
+        self.default = "Unknown"
         if mapping_path:
             with open(mapping_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -125,6 +270,17 @@ class BlockMapper:
             short = name.split(":", 1)[1]
             if short in self.mapping:
                 return self.mapping[short]
+        base = name.split("[", 1)[0]
+        if base != name:
+            if base in self.mapping:
+                return self.mapping[base]
+            if base.startswith("minecraft:"):
+                short_base = base.split(":", 1)[1]
+                if short_base in self.mapping:
+                    return self.mapping[short_base]
+        fallback = fallback_material_for_name(name)
+        if fallback:
+            return fallback
         return self.default
 
     def map_legacy(self, block_id, block_data):
@@ -395,6 +551,16 @@ def convert_world_to_prefab(
             mc_world, output_path, mapping_path, default_block=default_block
         )
 
+    if mode == "auto":
+        level_dat = os.path.join(mc_world, "level.dat")
+        try:
+            level = nbtlib.load(level_dat)
+            data = level.get("Data", {})
+            data_version = int(data.get("DataVersion", 0))
+            mode = "modern" if data_version >= 1444 else "legacy"
+        except (FileNotFoundError, OSError, ValueError, TypeError):
+            mode = "modern"
+
     mapper = BlockMapper(mapping_path, default_block=default_block)
     blocks = []
     min_x = min_y = min_z = None
@@ -413,6 +579,10 @@ def convert_world_to_prefab(
                 data_tag = sec.get("Data")
                 palette = sec.get("Palette")
                 block_states = sec.get("BlockStates")
+                block_states_tag = sec.get("block_states")
+                if block_states_tag is not None:
+                    palette = block_states_tag.get("palette", palette)
+                    block_states = block_states_tag.get("data", block_states)
 
                 if (
                     mode in ("auto", "legacy")
