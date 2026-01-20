@@ -376,19 +376,9 @@ def decode_varint_array(data, count):
     return values
 
 
-def iter_schem_blocks(nbt_root, mapper):
-    width = int(nbt_root.get("Width", 0))
-    height = int(nbt_root.get("Height", 0))
-    length = int(nbt_root.get("Length", 0))
-    if width <= 0 or height <= 0 or length <= 0:
-        raise ValueError("Schem is missing Width/Height/Length.")
-
-    palette_tag = nbt_root.get("Palette")
-    block_data_tag = nbt_root.get("BlockData")
-    if palette_tag is None or block_data_tag is None:
-        raise ValueError("Schem is missing Palette/BlockData.")
-
-    palette_max = int(nbt_root.get("PaletteMax", 0))
+def iter_schem_blocks_from_palette(
+    width, height, length, palette_tag, block_data_tag, mapper, palette_max=0
+):
     if palette_max <= 0:
         palette_max = max(int(v) for v in palette_tag.values()) + 1
 
@@ -422,6 +412,62 @@ def iter_schem_blocks(nbt_root, mapper):
         z = (idx // width) % length
         y = idx // (width * length)
         yield x, y, z, block_name
+
+
+def iter_schem_blocks(nbt_root, mapper):
+    width = int(nbt_root.get("Width", 0))
+    height = int(nbt_root.get("Height", 0))
+    length = int(nbt_root.get("Length", 0))
+    if width <= 0 or height <= 0 or length <= 0:
+        raise ValueError("Schem is missing Width/Height/Length.")
+
+    palette_tag = nbt_root.get("Palette")
+    block_data_tag = nbt_root.get("BlockData")
+    if palette_tag is None or block_data_tag is None:
+        raise ValueError("Schem is missing Palette/BlockData.")
+
+    palette_max = int(nbt_root.get("PaletteMax", 0))
+    yield from iter_schem_blocks_from_palette(
+        width,
+        height,
+        length,
+        palette_tag,
+        block_data_tag,
+        mapper,
+        palette_max=palette_max,
+    )
+
+
+def iter_schem_blocks_compound(nbt_root, mapper):
+    width = int(nbt_root.get("Width", 0))
+    height = int(nbt_root.get("Height", 0))
+    length = int(nbt_root.get("Length", 0))
+    if width <= 0 or height <= 0 or length <= 0:
+        raise ValueError("Schem is missing Width/Height/Length.")
+
+    blocks_tag = nbt_root.get("Blocks")
+    if blocks_tag is None:
+        raise ValueError("Schem is missing Blocks.")
+
+    palette_tag = blocks_tag.get("Palette")
+    block_data_tag = blocks_tag.get("Data")
+    if block_data_tag is None:
+        block_data_tag = blocks_tag.get("BlockData")
+    if palette_tag is None or block_data_tag is None:
+        raise ValueError("Schem is missing Blocks.Palette/Blocks.Data.")
+
+    palette_max = int(
+        blocks_tag.get("PaletteMax", nbt_root.get("PaletteMax", 0))
+    )
+    yield from iter_schem_blocks_from_palette(
+        width,
+        height,
+        length,
+        palette_tag,
+        block_data_tag,
+        mapper,
+        palette_max=palette_max,
+    )
 
 
 def vec3_from_nbt(value):
@@ -497,6 +543,12 @@ def convert_schematic_to_prefab(
         blocks = list(iter_litematic_blocks(root, mapper))
     elif root.get("Palette") is not None and root.get("BlockData") is not None:
         blocks = list(iter_schem_blocks(root, mapper))
+    elif (
+        root.get("Blocks") is not None
+        and root["Blocks"].get("Palette") is not None
+        and (root["Blocks"].get("Data") is not None or root["Blocks"].get("BlockData") is not None)
+    ):
+        blocks = list(iter_schem_blocks_compound(root, mapper))
     else:
         blocks = list(iter_schematic_blocks(root, mapper))
     if not blocks:
